@@ -1,6 +1,6 @@
 # Introduction to Smart Contract 
 #### The short description of all custom methods on Smart Contract
-*Compiler Version* - *v0.8.0*
+*Compiler Version* - *v0.8.1*
 *ERC Version* - *721*
 
 ## Required Packages for Compilation
@@ -77,10 +77,15 @@
 
 > The method is used to limit the maximum nfts count per purchase
 
-**setPrice** -
+**setMintPrice** -
     ***required parameter - NUMBER***
 
-> The method is used to define the price for NFT
+> The method is used to define the public mint price for NFT
+
+**setPreSaleMintPrice** -
+    ***required parameter - NUMBER***
+
+> The method is used to define the presale mint price for NFT
 
 **setReserveAtATime** -
     ***required parameter - NUMBER***
@@ -133,9 +138,13 @@
 **getMaximumAllowedTokens** -
 > returns *maximumAllowedTokensPerPurchase*
 
-**getPrice** -
+**getMintPrice** -
 > returns number
-> returns price
+> returns public mint price
+
+**getPreSaleMintPrice** -
+> returns number
+> returns presale mint price
 
 **getReserveAtATime** -
 > returns number
@@ -145,11 +154,11 @@
 > returns number
 > The total number of minted NFTs
 
-**isActive** -
+**isMintActive** -
 > return true/false
 > describes whether the sale starts or not
 
-**isAllowListActive** -
+**isPreSaleMintActive** -
 > return true/false
 > describes whether the presale starts or not
 

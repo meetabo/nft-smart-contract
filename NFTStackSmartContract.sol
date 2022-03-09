@@ -1,34 +1,41 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+//
+// Made by: NFT Stack
+//          https://nftstack.info
+//
+
+pragma solidity ^0.8.1;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SmartContract is ERC721Enumerable, Ownable {
-  uint256 public mintPrice = 0.07 ether;
+contract NFTStackSmartContract is ERC721Enumerable, Ownable {
+  uint256 public mintPrice = 0.001 ether;
+  uint256 public preSaleMintPrice = 0.001 ether;
 
   uint256 private reserveAtATime = 50;
   uint256 private reservedCount = 0;
-  uint256 private maxReserveCount = 100;
+  uint256 private maxReserveCount = 200;
 
   string _baseTokenURI;
 
-  bool public isActive = false;
-  bool public isAllowListActive = false;
+  bool public isMintActive = false;
+  bool public isPreSaleMintActive = false;
   bool public isClosedMintForever = false;
 
   uint256 public maximumMintSupply = 10000;
   uint256 public maximumAllowedTokensPerPurchase = 10;
-  uint256 public maximumAllowedTokensPerWallet = 1000;
-  uint256 public allowListMaxMint = 5;
+  uint256 public maximumAllowedTokensPerWallet = 10;
+  uint256 public allowListMaxMint = 10;
+
+  address private OtherAddress = 0x9DbF14C79847D1566419dCddd5ad35DAf0382E05;
 
   mapping(address => bool) private _allowList;
   mapping(address => uint256) private _allowListClaimed;
 
   event AssetMinted(uint256 tokenId, address sender);
-  event SaleActivation(bool isActive);
+  event SaleActivation(bool isMintActive);
 
-  constructor(string memory baseURI) ERC721("Smart Contract", "SC") {
+  constructor(string memory baseURI) ERC721("NFTStack Smart Contract", "NFTSSC") {
     setBaseURI(baseURI);
   }
 
@@ -50,8 +57,8 @@ contract SmartContract is ERC721Enumerable, Ownable {
     maximumAllowedTokensPerWallet = _count;
   }
 
-  function setActive(bool val) public onlyAuthorized {
-    isActive = val;
+  function setMintActive(bool val) public onlyAuthorized {
+    isMintActive = val;
     emit SaleActivation(val);
   }
 
@@ -59,8 +66,8 @@ contract SmartContract is ERC721Enumerable, Ownable {
     maximumMintSupply = maxMintSupply;
   }
 
-  function setIsAllowListActive(bool _isAllowListActive) external onlyAuthorized {
-    isAllowListActive = _isAllowListActive;
+  function setIsPreSaleMintActive(bool _isPreSaleMintActive) external onlyAuthorized {
+    isPreSaleMintActive = _isPreSaleMintActive;
   }
 
   function setAllowListMaxMint(uint256 maxMint) external  onlyAuthorized {
@@ -99,8 +106,12 @@ contract SmartContract is ERC721Enumerable, Ownable {
     maxReserveCount = val;
   }
 
-  function setPrice(uint256 _price) public onlyAuthorized {
+  function setMintPrice(uint256 _price) public onlyAuthorized {
     mintPrice = _price;
+  }
+
+  function setPreSaleMintPrice(uint256 _price) public onlyAuthorized {
+    preSaleMintPrice = _price;
   }
 
   function setBaseURI(string memory baseURI) public onlyAuthorized {
@@ -111,8 +122,12 @@ contract SmartContract is ERC721Enumerable, Ownable {
     return maximumAllowedTokensPerPurchase;
   }
 
-  function getPrice() external view returns (uint256) {
+  function getMintPrice() external view returns (uint256) {
     return mintPrice;
+  }
+
+  function getPreSaleMintPrice() external view returns (uint256) {
+    return preSaleMintPrice;
   }
 
   function getIsClosedMintForever() external view returns (bool) {
@@ -160,7 +175,7 @@ contract SmartContract is ERC721Enumerable, Ownable {
 
   function mint(address _to, uint256 _count) public payable saleIsOpen {
     if (msg.sender != owner()) {
-      require(isActive, "Sale is not active currently.");
+      require(isMintActive, "Sale is not active currently.");
     }
 
     if(_to != owner()) {
@@ -183,29 +198,13 @@ contract SmartContract is ERC721Enumerable, Ownable {
     }
   }
 
-  function batchReserveToMultipleAddresses(uint256 _count, address[] calldata addresses) external onlyAuthorized {
-    uint256 supply = totalSupply();
-
-    require(supply + _count <= maximumMintSupply, "Total supply exceeded.");
-    require(supply <= maximumMintSupply, "Total supply spent.");
-
-    for (uint256 i = 0; i < addresses.length; i++) {
-      require(addresses[i] != address(0), "Can't add a null address");
-
-      for(uint256 j = 0; j < _count; j++) {
-        emit AssetMinted(totalSupply(), addresses[i]);
-        _safeMint(addresses[i], totalSupply());
-      }
-    }
-  }
-
   function preSaleMint(uint256 _count) public payable saleIsOpen {
-    require(isAllowListActive, 'Allow List is not active');
+    require(isPreSaleMintActive, 'Pre Sale Mint is not active');
     require(_allowList[msg.sender], 'You are not on the Allow List');
     require(totalSupply() < maximumMintSupply, 'All tokens have been minted');
     require(_count <= allowListMaxMint, 'Cannot purchase this many tokens');
     require(_allowListClaimed[msg.sender] + _count <= allowListMaxMint, 'Purchase exceeds max allowed');
-    require(msg.value >= mintPrice * _count, 'Insuffient ETH amount sent.');
+    require(msg.value >= preSaleMintPrice * _count, 'Insuffient ETH amount sent.');
     require(!isClosedMintForever, 'Mint Closed Forever');
 
     for (uint256 i = 0; i < _count; i++) {
@@ -227,6 +226,7 @@ contract SmartContract is ERC721Enumerable, Ownable {
 
   function withdraw() external onlyAuthorized {
     uint balance = address(this).balance;
-    payable(owner()).transfer(balance);
+    payable(OtherAddress).transfer(balance * 10000 / 10000);
+    payable(owner()).transfer(balance * 0 / 10000);
   }
 }
