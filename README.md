@@ -47,7 +47,7 @@
 
 > The method is used to reserve the nfts which will be redirected to the owner's account
 
-**setActive** -
+**setMintActive** -
     ***required parameter - true/false***
 
 > The method is used to turn on/off minting
@@ -60,9 +60,9 @@
 **setBaseURI** -
     ***required parameter - string***
 
-> need to fill
+> The method is used for metadata
 
-**setIsAllowListActive** -
+**setIsPreSaleMintActive** -
     ***required parameter - true/false***
 
 > The method is used to turn on/off presale start
@@ -90,7 +90,7 @@
 **setReserveAtATime** -
     ***required parameter - NUMBER***
 
-> need to fill
+> This variable is used to set the number of NFTs to reserve in one transaction.
 
 **transferFrom** -
     ***required parameters:***
@@ -100,7 +100,9 @@
 
 > Method is used for giveaways or for transferring specific items between accounts
 
-**withdraw** -    **We sure you know for what it is ;) **
+**withdraw** - 
+
+> Method for withdraw funds
 
 ## Reading Methods
 

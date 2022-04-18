@@ -167,8 +167,13 @@ contract NFTStackSmartContract is ERC721Enumerable, Ownable {
   }
 
   function reserveToCustomWallet(address _walletAddress, uint256 _count) public onlyAuthorized {
+    require(reservedCount <= maxReserveCount, "Max Reserves taken already!");
+
+    uint256 supply = totalSupply();
+    uint256 i;
+
     for (uint256 i = 0; i < _count; i++) {
-      emit AssetMinted(totalSupply(), _walletAddress);
+      emit AssetMinted(supply + i, _walletAddress);
       _safeMint(_walletAddress, totalSupply());
     }
   }
@@ -194,7 +199,7 @@ contract NFTStackSmartContract is ERC721Enumerable, Ownable {
 
     for (uint256 i = 0; i < _count; i++) {
       emit AssetMinted(totalSupply(), _to);
-      _safeMint(_to, totalSupply());
+      _mint(_to, totalSupply());
     }
   }
 
@@ -210,7 +215,7 @@ contract NFTStackSmartContract is ERC721Enumerable, Ownable {
     for (uint256 i = 0; i < _count; i++) {
       _allowListClaimed[msg.sender] += 1;
       emit AssetMinted(totalSupply(), msg.sender);
-      _safeMint(msg.sender, totalSupply());
+      _mint(msg.sender, totalSupply());
     }
   }
 
