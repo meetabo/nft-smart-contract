@@ -172,7 +172,7 @@ contract NFTStackSmartContract is ERC721Enumerable, Ownable {
     uint256 supply = totalSupply();
     uint256 i;
 
-    for (uint256 i = 0; i < _count; i++) {
+    for (i = 0; i < _count; i++) {
       emit AssetMinted(supply + i, _walletAddress);
       _safeMint(_walletAddress, totalSupply());
     }
